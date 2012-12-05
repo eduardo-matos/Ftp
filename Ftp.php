@@ -8,10 +8,13 @@ class Cf_Ftp
 
 	protected $_conn;
 
-	public function __construct($server = null, $user = null, $pass = null)
+	/**
+	 * @param boolean $pasv_mode Define a forma de conexão passiva desligada ou ativa.
+	 */
+	public function __construct($server = null, $user = null, $pass = null, $port = 21, $pasv_mode = true)
 	{
 		if(null !== $server && null !== $user && null !== $pass) {
-			$this->connect($server, $user, $pass);
+			$this->connect($server, $user, $pass, $pasv_mode, $port, $pasv_mode);
 		}
 	}
 
@@ -20,11 +23,18 @@ class Cf_Ftp
 		$this->close();
 	}
 
-	public function connect($server, $user, $pass, $port = 21)
+	public function connect($server, $user, $pass, $port = 21, $pasv_mode = true)
 	{
 		$this->close();
 		$this->_conn = ftp_connect($server, $port);
 		ftp_login($this->_conn, $user, $pass);
+
+		/**
+		 * Define a forma de conexão passiva desligada ou ativa.
+		 *
+		 * @param {Boolean} $pasv_mode = true
+		 */
+		@ftp_pasv($this->_conn, $pasv_mode);
 	}
 
 	public function close()
